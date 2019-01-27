@@ -1,7 +1,7 @@
 {
-  "name": "game-time",
+  "name": "tagpro_client",
   "version": "1.0.0",
-  "description": "Module 4 project where we create a game using OOP in javascript.",
+  "description": "",
   "main": "lib/index.js",
   "scripts": {
     "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/saylerb/game-time.git"
+    "url": "https://github.com/ccs-computing-w19/tagpro_bot"
   },
-  "author": "Robbie Jaeger and Brian Sayler",
+  "author": "Seif Ibrahim",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/saylerb/game-time/issues"
+    "url": "https://github.com/ccs-computing-w19/tagpro_bot/issues"
   },
-  "homepage": "https://github.com/saylerb/game-time",
+  "homepage": "https://github.com/ccs-computing-w19/tagpro_bot",
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-core": "^6.13.2",
