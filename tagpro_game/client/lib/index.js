@@ -1,3 +1,4 @@
+import './tagpro-sockets'
 import Game from './game'
 import Keyboard from './keyboard'
 import Map from './map'

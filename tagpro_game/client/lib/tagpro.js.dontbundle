@@ -1,0 +1,222 @@
+let tagproConfig = {
+  gameSocket: 'localhost:4001'
+},
+tagpro = {
+  version: '3.2.1',
+  socket: null,
+  players: null,
+  chat: null,
+  playerId: null,
+  teamNames: null,
+  score: null,
+  state: null,
+  sound: null,
+  zoom: 1,
+  zooming: 0, serverPort: null, serverHost: null,
+  socketPort: null,
+  socketHost: null,
+  viewport: {
+    followPlayer: !0,
+    centerLock: !1,
+    source: {
+      x: 0,
+      y: 0
+    }
+  },
+  TILE_SIZE: 40,
+  kongregate: !1,
+  settings: {
+    ui: {
+      allChat: !0,
+      teamChat: !0,
+      groupChat: !0,
+      systemChat: !0,
+      tutorialChat: !1,
+      spectatorInfo: !0,
+      performanceInfo: !0,
+      names: !0,
+      teamNames: 'always',
+      degrees: !0,
+      matchState: !0
+    }
+  },
+  keys: {
+    left: [
+      37,
+      65,
+      97
+    ],
+    up: [
+      38,
+      87,
+      119
+    ],
+    right: [
+      39,
+      68,
+      100
+    ],
+    down: [
+      40,
+      83,
+      115
+    ],
+    space: [
+      32
+    ],
+    chatToTeam: [
+      222,
+      84
+    ],
+    chatToGroup: [
+      186,
+      71,
+      103
+    ],
+    chatToAll: [
+      13
+    ],
+    chatAsMod: [
+    ],
+    sendChat: [
+      13
+    ],
+    cancelChat: [
+      27
+    ],
+    nickCompleteChat: [
+      9
+    ],
+    showOptions: [
+      27
+    ],
+    zoomOut: [
+      173,
+      189,
+      109
+    ],
+    zoomIn: [
+      61,
+      187,
+      107
+    ],
+    resetZoom: [
+      90
+    ],
+    centerZoom: [
+      67
+    ],
+    specNext: [
+      81
+    ],
+    specPrev: [
+      87
+    ],
+    specRedFC: [
+      65
+    ],
+    specBlueFC: [
+      83
+    ],
+    toggleAutoJoin: [
+      32
+    ]
+  },
+  ping: {
+    current: 0,
+    history: [
+    ],
+    avg: 0
+  },
+  host: document.location.host,
+  gameEndsAt: null,
+  disableControls: 0,
+  spectator: !1,
+  spectators: 0,
+  movement: [
+  ],
+  joinGame: function (e) {
+    location.href = e
+  },
+  api: {
+    redrawBackground: function () {
+      console.error('The redrawBackground function has been deprecated.')
+    }
+  },
+  events: {
+    register: function (e) {
+      for (var t in e) tagpro.events[t] || (tagpro.events[t] = [
+      ]),
+	eventFunc = {
+	},
+	eventFunc[t] = e[t],
+	tagpro.events[t].push(eventFunc)
+    }
+  },
+  resourcesLoaded: !1,
+  _readyCallbacks: [
+  ],
+  _afterReadyCallbacks: [
+  ],
+  ready: function (e) {
+    if (tagpro.resourcesLoaded) {
+      e();
+      return
+    }
+    tagpro._readyCallbacks.push(e)
+  }
+},
+tagpro.ready.after = function (e) {
+  tagpro.resourcesLoaded ? e()  : tagpro._afterReadyCallbacks.push(e)
+},
+$(document).keydown(function (e) {
+  if (e.keyCode != 8) return;
+  var t = e.target.nodeName.toLowerCase();
+  if (t == 'input' || t == 'textarea') return;
+  e.preventDefault()
+}),
+tagpro.helpers = {
+  pad: function (e, t) {
+    e = e.toString(),
+      t = t.toString();
+    var n = t + e,
+      r = t.length > e.length ? t.length : e.length;
+    return n.substr(n.length - r)
+  },
+  timeFromSeconds: function (e, t) {
+    t == undefined && (t = !1);
+    var n = tagpro.helpers.pad;
+    e = parseFloat(e);
+    var r = parseInt(e / 3600),
+      i = parseInt(e / 60) % 60,
+      s = e % 60,
+      o = n(i, '00') + ':' + n(s, '00');
+    if (!t || r > 0) o = n(r, '00') + ':' + o;
+    return o
+  }
+},
+tagpro.createSocket = function () {
+  var e = io.connect(tagproConfig.gameSocket || document.location.href + '?r=' + Math.round(Math.random() * 10000000), {
+    reconnect: !1
+  });
+  return tagpro.rawSocket = e,
+  {
+    on: function (t, n) {
+      var r = function () {
+        try {
+          n.apply(this, arguments)
+        } catch (i) {
+          console.error('Unhandled socket.io on() error. Mod makers, handle your errors!'),
+          console.error(i),
+          e.removeListener(t, r)
+        }
+      };
+      e.on(t, r)
+    },
+    emit: function (t, n) {
+      e.emit(t, n)
+    }
+  }
+}
+
+tagpro.socket = tagpro.createSocket()
