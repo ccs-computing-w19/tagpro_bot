@@ -56,7 +56,8 @@ function setStage() {
       gameCounter = 0
       dom.hide(event.currentTarget.parentNode)
       dom.showGame()
-      prepareGame(dom.level(event), dom.canvas)
+      //prepareGame(dom.level(event), dom.canvas)
+      tagpro_socket.emit('joinRequest', {gameId:});
     })
   })
 }
@@ -84,7 +85,7 @@ function writeTotalScores(game) {
   }
 }
 
-function prepareGame(mapLevel) {
+/*function prepareGame(mapLevel) {
   var keys = new Keyboard().listenForEvents()
   var blueprint = new MapBlueprint()[mapLevel]
   var map = new Map(blueprint)
@@ -94,4 +95,8 @@ function prepareGame(mapLevel) {
 
   game = new Game(context, canvas, keys, map, blueprint)
   game.init()
+}*/
+
+function prepareGame(mapLevel) {
+
 }

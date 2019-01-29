@@ -52,4 +52,7 @@ export default class Dom {
     this.makeVisible(this.scoreBoard)
     this.hide(document.getElementById('total-score-container'))
   }
+	showJoiner(){
+		let join_template = document.getElementById("join-game-template");
+	}
 }
