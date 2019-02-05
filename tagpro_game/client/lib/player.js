@@ -1,6 +1,7 @@
 export default class Player {
   constructor(map, { x = 100, y = 100, radius = 20,
                 color = 'blue', controls = 'arrows', acceleration = 0.1 } = {}) {
+    this.id = -1;
     this.spawnPosition = { x: x, y: y }
     this.x = x
     this.y = y

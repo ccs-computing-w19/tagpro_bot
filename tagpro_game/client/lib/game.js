@@ -4,8 +4,9 @@ import Spike from './spike'
 import CollisionDectector from './collision-detector'
 
 export default class Game {
-  constructor(context, canvas, keyboard, map, blueprint, gameID) {
-    this.gameID = gameID;
+  constructor(context, canvas, keyboard, map, blueprint, gameId, playerId) {
+    this.gameId = gameId
+    this.playerId = playerId
     this.canvas = canvas
     this.context = context
     this.keyboard = keyboard

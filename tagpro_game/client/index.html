@@ -6,26 +6,22 @@
 		<link href="lib/style.css" rel="stylesheet">
 	</head>
 	<body>
-
-		<!-- This scrreen appears when a player clicks "JOIN" on the Title Screen -->
-		<script id="join-game-template" type="text/template">
-<div class="joinGameWrapper">
-					<div class="info">
-							<label for="inputPlayerName">Your Name:</label>
-							<input id="inputPlayerName" type="text" />
-					</div>
-
-					<div class="info">
-							<label for="inputGameId">Game ID:</label>
-							<input id="inputGameId" type="text"/>
-					</div>
-
-					<div class="info buttons">
-							<button id="btnStart" class="btn">Start</button>
-							<div id="playerWaitingMessage"></div>
-					</div>
+		<div class="join-game-wrapper">
+			<div class="info">
+				<label for="inputPlayerName">Your Name:</label>
+				<input id="inputPlayerName" type="text" />
 			</div>
-		</script>
+
+			<div class="info">
+				<label for="inputGameId">Game ID:</label>
+				<input id="inputGameId" type="text"/>
+			</div>
+
+			<div class="info buttons">
+				<button id="btn_start" class="start-button">Join</button>
+				<div id="playerWaitingMessage"></div>
+			</div>
+		</div>
 
 		<div class="start-menu">
 			<!--img class="menu-items" src="lib/assets/menu.png"></img-->
@@ -40,18 +36,18 @@
 			<p>Tag the other player if they caputure your flag.</p>
 			<p>Avoid spikes!</p>
 		</div>
+		
 
-		<div id="gameArea"></div>
 		<canvas id="game"
-					class="game-canvas"
-		 width="960px"
-	 height="640px">
+	  class="game-canvas"
+   width="960px"
+   height="640px">
 		</canvas>
 
 		<canvas id="time-bar"
-					class="game-canvas"
-		 width="960px"
-	 height="20px">
+	  class="game-canvas"
+   width="960px"
+   height="20px">
 		</canvas>
 
 		<div id="score-board-container">
@@ -63,15 +59,8 @@
 			</div>
 		</div>
 
-		<div id="total-score-container">
-			<div class="total-score">
-				<span class="total-label">Blue Games Won:</span>
-				<span class="total" id="blue-total"></span>
-			</div>
-			<div class="total-score">
-				<span class="total-label">Red Games Won:</span>
-				<span class="total" id="red-total"></span>
-			</div>
+		<div id="progress">
+			<h3 id="message"></h3>
 		</div>
 
 		<script src="/socket.io/socket.io.js"></script>

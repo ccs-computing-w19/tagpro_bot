@@ -11,17 +11,21 @@ export default class Dom {
     document.querySelector('div.start-menu').style.display = 'block'
     document.querySelectorAll('button.start-button').forEach(
       button => button.style.display = 'block')
-    document.getElementById('total-score-container').style.display = 'flex'
+    document.getElementById('progress').style.display = 'flex'
   }
 
-  get scoreBoard() {
-    return document.getElementById('score-board-container')
+  hideMenu() {
+    document.querySelector('div.start-menu').style.display = 'none'
+  }
+
+  get progress() {
+    return document.getElementById('progress')
   }
 
   level(event) {
-   return event.currentTarget.getAttribute("id")
+    return event.currentTarget.getAttribute("id")
   }
-  
+
   listenOn(element, type, fn) {
     element.addEventListener(type, fn)
   }
@@ -30,8 +34,12 @@ export default class Dom {
     element.style.display = 'none'
   }
 
-  hideScoreboard() {
-    this.scoreBoard.style.visibility = 'hidden'
+  hideProgress() {
+    this.progress.style.visibility = 'hidden'
+  }
+
+  showProgress() {
+    this.progress.style.visibility = 'visible'
   }
 
   makeVisible(element) {
@@ -44,15 +52,25 @@ export default class Dom {
 
   hideGame() {
     Array.from(this.canvases).forEach(canvas => this.hide(canvas))
-    this.hideScoreboard()
+    this.showProgress()
   }
 
   showGame() {
     Array.from(this.canvases).forEach(canvas => this.display(canvas))
-    this.makeVisible(this.scoreBoard)
-    this.hide(document.getElementById('total-score-container'))
+    this.hideProgress();
   }
-	showJoiner(){
-		let join_template = document.getElementById("join-game-template");
-	}
+
+  showJoiner() {
+    this.display(document.querySelector('div.join-game-wrapper'))
+  }
+
+  hideJoiner() {
+    this.hide(document.querySelector('div.join-game-wrapper'))
+  }
+
+  updateMessage(text) {
+    document.getElementById('message').innerText = text;
+  }
+
 }
+

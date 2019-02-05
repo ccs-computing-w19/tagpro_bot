@@ -11,25 +11,17 @@ body {
   padding: 10px;
 }
 
-#score-board-container {
-  width: 200px;
+#progress {
+  width: 50%;
   height: 100px;
-  border: 2px solid black;
-  border-radius: 10px;
   margin: auto;
   display: flex;
-  visibility: hidden;
-  background-color: white;
+  visibility: visible;
 }
 
-#total-score-container {
-  width: 400px;
-  height: 150px;
-  border: 2px solid black;
-  border-radius: 10px;
+#message{
   margin: auto;
-  display: flex;
-  background-color: white;
+  color: white;
 }
 
 .menu-items {
@@ -77,20 +69,6 @@ h3 {
   font-size: 5em;
 }
 
-#blue-score, #blue-total {
-  color: blue;
-}
-
-#red-score, #red-total {
-  color: red;
-}
-
-.total-label {
-  font-size: 1.75em;
-  vertical-align: middle;
-  padding-left: 20px;
-  display: flex;
-}
 
 .start-button {
   box-shadow: 3px 4px 0px 0px #8a2a21;
@@ -118,4 +96,10 @@ h3 {
 .start-button:active {
   position:relative;
   top:1px;
+}
+
+.join-game-wrapper {
+  display: none;
+  margin: auto;
+  width: 10%;
 }

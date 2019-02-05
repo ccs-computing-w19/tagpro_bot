@@ -1,21 +1,20 @@
-import './tagpro-sockets'
+import TagproSocket from './tagpro-socket'
 import Game from './game'
 import Keyboard from './keyboard'
 import Map from './map'
 import MapBlueprint from './map-blueprint'
 import Dom from './dom'
 
-var canvas = document.getElementById('game')
-var context = canvas.getContext('2d')
+let canvas = document.getElementById('game')
+let context = canvas.getContext('2d')
 
 const dom = new Dom()
-var game = new Game()
-var gameCounter = 0
-var timeLimit = 3600
+let game = new Game()
+let tagpro_socket = new TagproSocket();
+let gameCounter = 0
+let timeLimit = 3600
 
 setStage()
-initTotalScores()
-displayTotalScores()
 
 requestAnimationFrame(function gameLoop(){
 
@@ -27,10 +26,9 @@ requestAnimationFrame(function gameLoop(){
   } else if (gameCounter === timeLimit) {
     gameCounter++
     writeTotalScores(game)
-    displayTotalScores()
   } else {
-    dom.showMenu()
-    dom.hideGame()
+    //dom.showMenu()
+    //dom.hideGame()
   }
   requestAnimationFrame(gameLoop)
 })
@@ -38,7 +36,7 @@ requestAnimationFrame(function gameLoop(){
 function renderTimeBar() {
   var timeCanvas = document.getElementById('time-bar')
   var timeContext = timeCanvas.getContext('2d')
-  
+
   timeContext.clearRect(0, 0, timeCanvas.width, timeCanvas.height)
   timeContext.beginPath()
 
@@ -51,25 +49,8 @@ function renderTimeBar() {
 
 function setStage() {
   console.log("Setting stage")
-  Array.from(dom.buttons).forEach(button => {
-    dom.listenOn(button, 'click', event => {
-      gameCounter = 0
-      dom.hide(event.currentTarget.parentNode)
-      dom.showGame()
-      //prepareGame(dom.level(event), dom.canvas)
-      tagpro_socket.emit('joinRequest', {gameId:});
-    })
-  })
-}
-
-function displayTotalScores() {
-  document.querySelector("#red-total").innerHTML = localStorage.getItem('redTotal')
-  document.querySelector("#blue-total").innerHTML = localStorage.getItem('blueTotal')
-}
-
-function initTotalScores() {
-  localStorage.getItem('redTotal') || localStorage.setItem('redTotal', 0)
-  localStorage.getItem('blueTotal') || localStorage.setItem('blueTotal', 0)
+  tagpro_socket.initListeners(dom, game);
+  initButtonListeners();
 }
 
 function writeTotalScores(game) {
@@ -85,18 +66,33 @@ function writeTotalScores(game) {
   }
 }
 
-/*function prepareGame(mapLevel) {
-  var keys = new Keyboard().listenForEvents()
-  var blueprint = new MapBlueprint()[mapLevel]
-  var map = new Map(blueprint)
-
-  canvas.setAttribute("width", `${map.cols * map.tsize}px`)
-  canvas.setAttribute("height", `${map.rows * map.tsize}px`)
-
-  game = new Game(context, canvas, keys, map, blueprint)
-  game.init()
-}*/
-
 function prepareGame(mapLevel) {
+	var keys = new Keyboard().listenForEvents()
+	var blueprint = new MapBlueprint()[mapLevel]
+	var map = new Map(blueprint)
+
+	canvas.setAttribute("width", `${map.cols * map.tsize}px`)
+	canvas.setAttribute("height", `${map.rows * map.tsize}px`)
+
+	game = new Game(context, canvas, keys, map, blueprint)
+	game.init()
+}
+
+function initButtonListeners(){
+  dom.listenOn(document.getElementById("create_game"), 'click', () => {
+    tagpro_socket.emitCreateRequest();
+    dom.hideMenu();
+  });
+
+  dom.listenOn(document.getElementById("join_game"), 'click', () => {
+    dom.showJoiner();
+    dom.hideMenu();
+  });
+
+  dom.listenOn(document.getElementById("btn_start"), 'click', () => {
+    let gameId = document.getElementById("inputGameId").value;
+    let playerName = document.getElementById("inputPlayerName").value;
+    tagpro_socket.emitJoinRequest(gameId, playerName);
+  });
 
 }
