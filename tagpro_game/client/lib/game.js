@@ -4,16 +4,16 @@ import Spike from './spike'
 import CollisionDectector from './collision-detector'
 
 export default class Game {
-  constructor(context, canvas, keyboard, map, blueprint, gameId, playerId) {
-    this.gameId = gameId
-    this.playerId = playerId
+    gameId
+    playerId
+  constructor(context, canvas, keyboard) {
     this.canvas = canvas
     this.context = context
     this.keyboard = keyboard
-    this.map = map
+    this.map = {}
     this.players = []
     this.flags = []
-    this.blueprint = blueprint
+    this.blueprint = {}
     this.spikes = []
     this.collisionDetector = {}     
     this.running = false
