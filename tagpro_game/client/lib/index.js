@@ -5,11 +5,13 @@ import Map from './map'
 import MapBlueprint from './map-blueprint'
 import Dom from './dom'
 
-let canvas = document.getElementById('game')
 let context = canvas.getContext('2d')
+let canvas = document.getElementById('game')
+let keys = new Keyboard().listenForEvents()
 
 const dom = new Dom()
-let game = new Game()
+
+let game = new Game(context, canvas, keys);
 let tagpro_socket = new TagproSocket();
 let gameCounter = 0
 let timeLimit = 3600
@@ -21,14 +23,13 @@ requestAnimationFrame(function gameLoop(){
   if (game.running && gameCounter < timeLimit) {
     gameCounter++
     renderTimeBar()
-    game.update(gameCounter)
+    //game.update(gameCounter)
     game.draw()
   } else if (gameCounter === timeLimit) {
     gameCounter++
     writeTotalScores(game)
   } else {
-    //dom.showMenu()
-    //dom.hideGame()
+    dom.hideGame()
   }
   requestAnimationFrame(gameLoop)
 })
@@ -64,18 +65,6 @@ function writeTotalScores(game) {
   } else {
     alert("Tie Game!")
   }
-}
-
-function prepareGame(mapLevel) {
-	var keys = new Keyboard().listenForEvents()
-	var blueprint = new MapBlueprint()[mapLevel]
-	var map = new Map(blueprint)
-
-	canvas.setAttribute("width", `${map.cols * map.tsize}px`)
-	canvas.setAttribute("height", `${map.rows * map.tsize}px`)
-
-	game = new Game(context, canvas, keys, map, blueprint)
-	game.init()
 }
 
 function initButtonListeners(){
