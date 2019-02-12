@@ -19,29 +19,25 @@ export default class Game {
     this.running = false
   }
 
-  init() {
-    let self = this
-    self.running = true
-
-    self.players.push(new Player(self.map, self.blueprint.redPlayerOptions))
-    self.players.push(new Player(self.map, self.blueprint.bluePlayerOptions))
-
-    self.flags.push(new Flag(self.blueprint.blueFlagOptions))
-    self.flags.push(new Flag(self.blueprint.redFlagOptions))
-
-    if (self.blueprint.spikes) {
-      self.blueprint.spikes.forEach(spikeOptions => {
-        self.spikes.push(new Spike(spikeOptions))
-      })
-    }
-    self.collisionDetector = new CollisionDectector(self.players, self.flags, self.spikes)
+  init(map, blueprint, sPlayers) {
+    this.map = map
+    this.blueprint = blueprint
+    updatePlayers(sPlayers);
+    this.running = true
+    this.canvas.setAttribute("width", `${map.cols * map.tsize}px`)
+    this.canvas.setAttribute("height", `${map.rows * map.tsize}px`)
   }
 
-  update(game_counter) {
-    this.updateScoreboard()
-    this.players.forEach(player => player.move(this.keyboard.keys))
-    this.spikes.forEach(spike => spike.move(game_counter))
-    this.collisionDetector.checkAllCollisions()
+  //sPlayers are server players
+  updatePlayers(sPlayers) {
+    players.forEach( (id, sPlayer, sPlayers) => {
+      if(this.players[id] == undefined){
+	this.players[id] = new Player(id, sPlayer.map, sPlayer.x, sPlayer.y, sPlayer.radius, sPlayer.color, sPlayer.controls, sPlayer.acceleration);
+      }
+      sPlayer.forEach( (key, value, sPlayer) => {
+	this.players[id][key] = value;
+      });
+    });
   }
 
   updateScoreboard() {
