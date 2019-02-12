@@ -1,7 +1,7 @@
 export default class Player {
-  constructor(map, { x = 100, y = 100, radius = 20,
+  constructor(id, map, { x = 100, y = 100, radius = 20,
                 color = 'blue', controls = 'arrows', acceleration = 0.1 } = {}) {
-    this.id = -1;
+    this.id = id;
     this.spawnPosition = { x: x, y: y }
     this.x = x
     this.y = y
@@ -15,6 +15,7 @@ export default class Player {
     this.hasFlag = false
     this.acceleration = acceleration
     this.frozen = false
+    this.lastSync = {} //stores player fields as keys and the server tick they were last updated
   }
 
   loadPlayerImage() {
@@ -69,47 +70,3 @@ export default class Player {
       )
     }
   }
-
-  accelerate(keys){
-    let acceleration = this.acceleration
-    if (!this.frozen) {
-      if (this.controls === 'arrows') {
-        if (keys.leftArrow) { this.dx-= acceleration }
-        if (keys.upArrow) { this.dy-= acceleration }
-        if (keys.rightArrow) { this.dx+= acceleration }
-        if (keys.downArrow) { this.dy+= acceleration }
-      } else {
-        if (keys.A) { this.dx-= acceleration }
-        if (keys.W) { this.dy-= acceleration }
-        if (keys.D) { this.dx+= acceleration }
-        if (keys.S) { this.dy+= acceleration }
-      }
-    }
-  }
-
-  decelerate() {
-    let drag = 0.975
-    this.dx *= drag
-    this.dy *= drag
-  }
-
-  move(keys) {
-    this.accelerate(keys)
-    this.decelerate()
-    this.x += this.dx
-    this.y += this.dy
-    this.wallCollision()
-  }
-
-  wallCollision() {
-    let thetas = [...Array(72).keys()].map(x => x * 5 * (Math.PI / 180))
-    let force = 0.1
-
-    thetas.forEach(theta => {
-      if (this.map.isWallCollision(this.x + (this.radius * Math.cos(theta)), this.y + (this.radius * Math.sin(theta)))) {
-        this.dx -= force * Math.cos(theta)
-        this.dy -= force * Math.sin(theta)
-      }
-    })
-  }
-}
