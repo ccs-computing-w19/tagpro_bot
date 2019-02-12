@@ -5,10 +5,6 @@ export default class Keyboard {
       "upArrow": false,
       "rightArrow": false,
       "downArrow": false,
-      "A": false,
-      "W": false,
-      "D": false,
-      "S": false
     }
   }
 
@@ -43,18 +39,6 @@ export default class Keyboard {
       case 40:
         that.downArrow = true
         break
-      case 65:
-        that.A = true
-        break
-      case 87:
-        that.W = true
-        break
-      case 68:
-        that.D = true
-        break
-      case 83:
-        that.S = true
-        break
     }
   }
 
@@ -73,18 +57,6 @@ export default class Keyboard {
         break
       case 40:
         that.downArrow = false
-        break
-      case 65:
-        that.A = false
-        break
-      case 87:
-        that.W = false
-        break
-      case 68:
-        that.D = false
-        break
-      case 83:
-        that.S = false
         break
     }
   }
