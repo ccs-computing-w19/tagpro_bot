@@ -6,7 +6,7 @@ export default class TagproSocket{
     this.IO.on('showMenu', () => {dom.showMenu()});
     this.IO.on('newGameCreated', (data) => {
       dom.updateMessage(`New game created with id: ${data.gameId}.`);
-      game.gameID = data.gameId;
+      game.gameId = data.gameId;
       game.playerId = data.playerId;
     });
     this.IO.on('joinError', (error) => {
@@ -18,6 +18,12 @@ export default class TagproSocket{
     this.IO.on("playerJoined", (data) => {
       dom.updateMessage(`${data.playerName} joined game: ${data.gameId}.`);
       game.gameId = data.gameId;
+    });
+    this.IO.on("playerId", (data) => {
+      game.playerId = data.playerId;
+    });
+    this.IO.on("gameStarted", (data) => {
+      game.init(data.map, data.blueprint, data.players);
     });
   }
   emitCreateRequest(){
