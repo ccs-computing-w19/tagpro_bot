@@ -4,16 +4,16 @@
 let activeLoops = [];
 
 const getLoopId = (function() {
-	let staticLoopId = 0;
+  let staticLoopId = 0;
 
-	return function() {
-		return staticLoopId++;
-	}
+  return function() {
+    return staticLoopId++;
+  }
 })();
 
 function getNano() {
-	var hrtime = process.hrtime();
-	return (+hrtime[0]) * s2nano + (+hrtime[1]);
+  var hrtime = process.hrtime();
+  return (+hrtime[0]) * s2nano + (+hrtime[1]);
 }
 
 const s2nano = 1e9;
@@ -33,69 +33,68 @@ const ms2nano = 1e6;
  * grained "long wait" to get most of the way to our target tick time, then use the
  * fine-grained wait to wait the remaining time.
  */
-module.exports.setGameLoop = function(update, render, tickLengthMs = 1000 / 30, framerateMS = 1000 / 60) {
-	let loopId = getLoopId();
-	activeLoops.push(loopId);
+module.exports.setGameLoop = function(update, render = () => {}, tickLengthMs = 1000 / 30, framerateMS = 1000 / 60) {
+  let loopId = getLoopId();
+  activeLoops.push(loopId);
 
-	// expected tick length
-	const tickLengthNano = tickLengthMs * ms2nano;
-	const framerateNano = framerateMS * ms2nano;
+  // expected tick length
+  const tickLengthNano = tickLengthMs * ms2nano;
+  const framerateNano = framerateMS * ms2nano;
 
-	// We pick the floor of `tickLengthMs - 1` because the `setImmediate` below runs
-	// around 16ms later and if our coarse-grained 'long wait' is too long, we tend
-	// to miss our target framerate by a little bit
-	const longwaitMs = Math.floor(framerateMS - 1);
-	const longwaitNano = longwaitMs * ms2nano;
+  // We pick the floor of `tickLengthMs - 1` because the `setImmediate` below runs
+  // around 16ms later and if our coarse-grained 'long wait' is too long, we tend
+  // to miss our target framerate by a little bit
+  const longwaitMs = Math.floor(framerateMS - 1);
+  const longwaitNano = longwaitMs * ms2nano;
 
-	let prev = getNano();
-	let target = getNano();
-	let lag = 0
+  let prev = getNano();
+  let target = getNano();
+  let lag = 0
 
-	let frame = 0;
+  const gameLoop = function() {
 
-	const gameLoop = function() {
-		frame++;
+    const now = getNano();
 
-		const now = getNano();
-		prev = now;
+    lag += now - prev;
 
-		lag += now - prev
-		while(lag >= tickLengthNano){
-			lag -= tickLengthNano
+    prev = now;
 
-			update();
-		}
+    while(lag >= tickLengthNano){
+      lag -= tickLengthNano;
 
-		if (now >= target) {
-			target = now + framerateNano;
+      update();
+    }
 
-			render(lag / tickLengthNano);
-		}
+    if (now >= target) {
+      target = now + framerateNano;
 
-		// do not go on to renew loop if no longer active
-		if (activeLoops.indexOf(loopId) === -1) {
-			return;
-		}
+      render(lag / tickLengthNano);
+    }
 
-		// re-grab the current time in case we ran update and it took a long time
-		const remainingInFrame = target - getNano();
-		if (remainingInFrame > longwaitNano) {
-			// unfortunately it seems our code/node leaks memory if setTimeout is
-			// called with a value less than 16, so we give up our accuracy for
-			// memory stability
-			setTimeout(gameLoop, Math.max(longwaitMs, 16));
-		} else {
-			setImmediate(gameLoop);
-		}
-	}
+    // do not go on to renew loop if no longer active
+    if (activeLoops.indexOf(loopId) === -1) {
+      return;
+    }
 
-	// begin the loop!
-	gameLoop();
+    // re-grab the current time in case we ran update and it took a long time
+    const remainingInFrame = target - getNano();
+    if (remainingInFrame > longwaitNano) {
+      // unfortunately it seems our code/node leaks memory if setTimeout is
+      // called with a value less than 16, so we give up our accuracy for
+      // memory stability
+      setTimeout(gameLoop, Math.max(longwaitMs, 16));
+    } else {
+      setImmediate(gameLoop);
+    }
+  }
 
-	return loopId;
+  // begin the loop!
+  gameLoop();
+
+  return loopId;
 };
 
 module.exports.clearGameLoop = function(loopId) {
-	// remove the loop id from the active loops
-	activeLoops.splice(activeLoops.indexOf(loopId), 1);
+  // remove the loop id from the active loops
+  activeLoops.splice(activeLoops.indexOf(loopId), 1);
 };
