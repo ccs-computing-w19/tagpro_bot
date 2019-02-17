@@ -32,8 +32,7 @@ export default class TagproSocket{
   emitJoinRequest(myGameId, myPlayerName){
     this.IO.emit('joinRequest', {gameId: myGameId, playerName: myPlayerName});
   }
-  emitLeaveGame(){
-    this.IO.emit('leaveGame');
+  emitKeyboard(keys){
+    this.IO.emit('keyboard', {keys: keys});
   }
-
 }

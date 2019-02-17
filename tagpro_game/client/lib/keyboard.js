@@ -1,5 +1,6 @@
 export default class Keyboard {
-  constructor() {
+  constructor(tagpro_socket) {
+    this.tagpro_socket = tagpro_socket
     this.keys = {
       "leftArrow": false,
       "upArrow": false,
@@ -7,6 +8,7 @@ export default class Keyboard {
       "downArrow": false,
     }
   }
+
 
   listenForEvents() {
     window.addEventListener('keydown', this.onKeyDown.bind(this))
@@ -40,6 +42,9 @@ export default class Keyboard {
         that.downArrow = true
         break
     }
+
+   this.tagpro_socket.emitKeyboard(that) 
+
   }
 
   onKeyUp(event){
@@ -59,5 +64,8 @@ export default class Keyboard {
         that.downArrow = false
         break
     }
+
+   this.tagpro_socket.emitKeyboard(that) 
+
   }
 }

@@ -34,4 +34,17 @@ io.on('connection', (socket) => {
     gameServer.joinGame(data.gameId, socket);
   });
 
+  socket.on('keyboard', (data) => {
+    let game = gameServer.games[socket.gameId]
+    if(game != undefined && game.running){
+      let player = game.players[socket.playerId]
+      if(player != undefined){
+	player.keyboard.updateKeys(data.keys);
+      }
+    }
+  });
+
+  socket.on('disconnect', () => {
+    //TODO remove player from game
+  });
 });
