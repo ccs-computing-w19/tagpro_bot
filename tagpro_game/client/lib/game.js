@@ -2,11 +2,15 @@ import Player from './player'
 import Flag from './flag'
 import Spike from './spike'
 import CollisionDectector from './collision-detector'
+import Map from './map'
 
 export default class Game {
-    gameId
-    playerId
+    //TODO allow this in babel config
+    //gameId 
+    //playerId
   constructor(context, canvas, keyboard) {
+    this.gameId = undefined
+    this.playerId = undefined
     this.canvas = canvas
     this.context = context
     this.keyboard = keyboard
@@ -17,26 +21,40 @@ export default class Game {
     this.spikes = []
     this.collisionDetector = {}     
     this.running = false
+
+    this.gameCounter = 0
   }
 
-  init(map, blueprint, sPlayers) {
-    this.map = map
-    this.blueprint = blueprint
-    updatePlayers(sPlayers);
+  init(blueprint, sPlayers) {
     this.running = true
-    this.canvas.setAttribute("width", `${map.cols * map.tsize}px`)
-    this.canvas.setAttribute("height", `${map.rows * map.tsize}px`)
+
+    this.blueprint = blueprint
+    this.map = new Map(blueprint)
+	  
+    this.updatePlayers(sPlayers)
+
+    this.flags.push(new Flag(this.blueprint.blueFlagOptions))
+    this.flags.push(new Flag(this.blueprint.redFlagOptions))
+
+    if (this.blueprint.spikes) {
+      this.blueprint.spikes.forEach(spikeOptions => {
+        this.spikes.push(new Spike(spikeOptions))
+      })
+    }
+
+    this.canvas.setAttribute("width", `${this.map.cols * this.map.tsize}px`)
+    this.canvas.setAttribute("height", `${this.map.rows * this.map.tsize}px`)
   }
 
   //sPlayers are server players
   updatePlayers(sPlayers) {
-    players.forEach( (id, sPlayer, sPlayers) => {
+    sPlayers.forEach( (sPlayer, id, sPlayers) => {
       if(this.players[id] == undefined){
 	this.players[id] = new Player(id, sPlayer.map, sPlayer.x, sPlayer.y, sPlayer.radius, sPlayer.color, sPlayer.controls, sPlayer.acceleration);
       }
-      sPlayer.forEach( (key, value, sPlayer) => {
-	this.players[id][key] = value;
-      });
+      for(const key in sPlayer) {
+	this.players[id][key] = sPlayer[key];
+      }
     });
   }
 
