@@ -1,23 +1,23 @@
 export default class Player {
-  constructor(id, socket, map, { x = 100, y = 100, radius = 20,
-    color = 'blue', controls = 'arrows', acceleration = 0.1 } = {}) {
+  constructor(id, socket, map, keyboard, { x = 100, y = 100, radius = 20,
+    color = 'blue', controls = 'arrows', acceleration = 0.1, name = 'someball'} = {}) {
+    this.keyboard = keyboard
 
-    this.id = id;
-    this.socket = socket;
-
+    this.id = id
+    this.name = name
     this.spawnPosition = { x: x, y: y }
-    this.x = 0 
-    this.y = 0 
+    this.x = x 
+    this.y = y 
     this.dx = 0
     this.dy = 0
     this.radius = radius
     this.color = color
-    this.playerImg = this.loadPlayerImage()
     this.controls = controls
     this.map = map
     this.hasFlag = false
     this.acceleration = acceleration
     this.frozen = false
+
   }
 
   accelerate(keys){
@@ -55,5 +55,4 @@ export default class Player {
       }
     })
   }
-}
 }

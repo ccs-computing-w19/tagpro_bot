@@ -19,11 +19,17 @@ export default class TagproSocket{
       dom.updateMessage(`${data.playerName} joined game: ${data.gameId}.`);
       game.gameId = data.gameId;
     });
-    this.IO.on("playerId", (data) => {
+    this.IO.on('playerId', (data) => {
       game.playerId = data.playerId;
     });
-    this.IO.on("gameStarted", (data) => {
-      game.init(data.map, data.blueprint, data.players);
+    this.IO.on('gameStarted', (data) => {
+      console.log('Starting game...');
+      dom.hideJoiner();
+      dom.showGame();
+      game.init(data.blueprint, data.players);
+    });
+    this.IO.on('playerUpdate', (data) => {
+      game.updatePlayers(data.players);
     });
   }
   emitCreateRequest(){

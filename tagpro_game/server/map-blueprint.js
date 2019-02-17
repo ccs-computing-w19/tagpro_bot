@@ -22,7 +22,7 @@ export default class MapBlueprint {
       blueFlagOptions: { color: 'blue', x: 75, y: 75, tsize: this.tsize },
       redFlagOptions: { color: 'red', x: 325, y: 325, tsize: this.tsize },
       bluePlayerOptions: { x: 110, y: 110, color: 'blue',
-                           controls: 'wasd', acceleration: 0.1 },
+                           controls: 'arrows', acceleration: 0.1 },
       redPlayerOptions:  { x: 290, y: 290, color: 'red',
                            controls: 'arrows', acceleration: 0.1 }
     }
@@ -60,7 +60,7 @@ export default class MapBlueprint {
       rows: 16,
       blueFlagOptions: { color: 'blue', x: 170, y: 320, tsize: this.tsize },
       redFlagOptions: { color: 'red', x: 830, y: 320, tsize: this.tsize },
-      bluePlayerOptions: { x: 110, y: 320, color: 'blue', controls: 'wasd' },
+      bluePlayerOptions: { x: 110, y: 320, color: 'blue', controls: 'arrows' },
       redPlayerOptions:  { x: 890, y: 320, color: 'red', controls: 'arrows' }
     }
 
@@ -97,7 +97,7 @@ export default class MapBlueprint {
       rows: 16,
       blueFlagOptions: { color: 'blue', x: 170, y: 320, tsize: this.tsize },
       redFlagOptions: { color: 'red', x: 830, y: 320, tsize: this.tsize },
-      bluePlayerOptions: { x: 110, y: 320, color: 'blue', controls: 'wasd' },
+      bluePlayerOptions: { x: 110, y: 320, color: 'blue', controls: 'arrows' },
       redPlayerOptions:  { x: 890, y: 320, color: 'red', controls: 'arrows' }
     }
   }

@@ -5,7 +5,6 @@ export default class Map {
     this.tsize = blueprint.tsize
     this.tiles = blueprint.tiles
     this.barriers = blueprint.barriers
-    this.tilesImg = this.loadTileImage()
   }
 
   convertXYtoTileIndex(x, y) {
@@ -23,16 +22,18 @@ export default class Map {
     return this.barriers.some(barrier => barrier === tileValue)
   }
 
+/*
   loadTileImage() {
     let tilesImg = new Image()
     tilesImg.src = './lib/assets/tiles.png'
     return tilesImg;
   }
+*/
 
   getTile(col, row) {
     return this.tiles[row * this.cols + col];
   }
-
+/*
   render(context) {
     for (let c = 0; c < this.cols; c++) {
       for (let r = 0; r < this.rows; r++) {
@@ -53,4 +54,5 @@ export default class Map {
       }
     }
   }
+  */
 }

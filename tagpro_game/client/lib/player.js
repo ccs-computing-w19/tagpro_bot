@@ -1,7 +1,8 @@
 export default class Player {
   constructor(id, map, { x = 100, y = 100, radius = 20,
-                color = 'blue', controls = 'arrows', acceleration = 0.1 } = {}) {
+    color = 'blue', controls = 'arrows', acceleration = 0.1, name = 'someball'} = {}) {
     this.id = id;
+    this.name = name
     this.spawnPosition = { x: x, y: y }
     this.x = x
     this.y = y
@@ -41,32 +42,33 @@ export default class Player {
   }
 
   draw(context) {
-		if (this.frozen){
-			context.globalAlpha = 0.5
-		}
+    if (this.frozen){
+      context.globalAlpha = 0.5
+    }
     context.drawImage(
-        this.playerImg,
-        this.determinePlayerTilePxl(),
-        0,
-        this.map.tsize,
-        this.map.tsize,
-        this.x - this.radius,
-        this.y - this.radius,
-        this.map.tsize,
-        this.map.tsize
+      this.playerImg,
+      this.determinePlayerTilePxl(),
+      0,
+      this.map.tsize,
+      this.map.tsize,
+      this.x - this.radius,
+      this.y - this.radius,
+      this.map.tsize,
+      this.map.tsize
     )
-		context.globalAlpha = 1.0
+    context.globalAlpha = 1.0
     if (this.hasFlag) {
       context.drawImage(
-        this.playerImg,
-        this.determineFlagTilePxl(),
-        40,
-        this.map.tsize,
-        this.map.tsize,
-        this.x,
-        this.y - 50,
-        this.map.tsize,
-        this.map.tsize
+	this.playerImg,
+	this.determineFlagTilePxl(),
+	40,
+	this.map.tsize,
+	this.map.tsize,
+	this.x,
+	this.y - 50,
+	this.map.tsize,
+	this.map.tsize
       )
     }
   }
+}
