@@ -1,96 +1,70 @@
+import TagproSocket from './tagpro-socket'
 import Game from './game'
 import Keyboard from './keyboard'
 import Map from './map'
 import MapBlueprint from './map-blueprint'
 import Dom from './dom'
 
-var canvas = document.getElementById('game')
-var context = canvas.getContext('2d')
+let tagpro_socket = new TagproSocket();
+
+let canvas = document.getElementById('game')
+let context = canvas.getContext('2d')
+let keys = new Keyboard(tagpro_socket).listenForEvents()
 
 const dom = new Dom()
-var game = new Game()
-var gameCounter = 0
-var timeLimit = 3600
+
+let game = new Game(context, canvas, keys);
 
 setStage()
-initTotalScores()
-displayTotalScores()
 
 requestAnimationFrame(function gameLoop(){
-
-  if (game.running && gameCounter < timeLimit) {
-    gameCounter++
-    renderTimeBar()
-    game.update(gameCounter)
-    game.draw()
-  } else if (gameCounter === timeLimit) {
-    gameCounter++
-    writeTotalScores(game)
-    displayTotalScores()
-  } else {
-    dom.showMenu()
-    dom.hideGame()
-  }
-  requestAnimationFrame(gameLoop)
+	if (game.running && game.gameCounter < game.gameDuration) {
+		renderTimeBar(game.gameCounter, game.gameDuration)
+		game.draw()
+	} else {
+		dom.hideGame()
+	}
+	requestAnimationFrame(gameLoop)
 })
 
-function renderTimeBar() {
-  var timeCanvas = document.getElementById('time-bar')
-  var timeContext = timeCanvas.getContext('2d')
-  
-  timeContext.clearRect(0, 0, timeCanvas.width, timeCanvas.height)
-  timeContext.beginPath()
+function renderTimeBar(gameCounter, gameDuration) {
+	var timeCanvas = document.getElementById('time-bar')
+	var timeContext = timeCanvas.getContext('2d')
 
-  timeContext.fillStyle = "#d3d3d3"
-  timeContext.fillRect(0, 0, timeCanvas.width, timeCanvas.height)
-  timeContext.fillStyle = "green"
+	timeContext.clearRect(0, 0, timeCanvas.width, timeCanvas.height)
+	timeContext.beginPath()
 
-  timeContext.fillRect(0, 0, timeCanvas.width * (1 - gameCounter / timeLimit), timeCanvas.height)
+	timeContext.fillStyle = "#d3d3d3"
+	timeContext.fillRect(0, 0, timeCanvas.width, timeCanvas.height)
+	timeContext.fillStyle = "green"
+
+	timeContext.fillRect(0, 0, timeCanvas.width * (1 - gameCounter / gameDuration), timeCanvas.height)
 }
 
 function setStage() {
-  console.log("Setting stage")
-  Array.from(dom.buttons).forEach(button => {
-    dom.listenOn(button, 'click', event => {
-      gameCounter = 0
-      dom.hide(event.currentTarget.parentNode)
-      dom.showGame()
-      prepareGame(dom.level(event), dom.canvas)
-    })
-  })
+	console.log("Setting stage")
+	tagpro_socket.initListeners(dom, game);
+	initButtonListeners();
 }
 
-function displayTotalScores() {
-  document.querySelector("#red-total").innerHTML = localStorage.getItem('redTotal')
-  document.querySelector("#blue-total").innerHTML = localStorage.getItem('blueTotal')
+function initButtonListeners(){
+	dom.listenOn(document.getElementById("create_game"), 'click', () => {
+		tagpro_socket.emitCreateRequest();
+		dom.showJoiner();
+		dom.hideMenu();
+	});
+
+	dom.listenOn(document.getElementById("join_game"), 'click', () => {
+		dom.showJoiner();
+		dom.showProgress();
+		dom.hideMenu();
+	});
+
+	dom.listenOn(document.getElementById("btn_start"), 'click', () => {
+		let gameId = document.getElementById("inputGameId").value;
+		let playerName = document.getElementById("inputPlayerName").value;
+		tagpro_socket.emitJoinRequest(gameId, playerName);
+	});
+
 }
 
-function initTotalScores() {
-  localStorage.getItem('redTotal') || localStorage.setItem('redTotal', 0)
-  localStorage.getItem('blueTotal') || localStorage.setItem('blueTotal', 0)
-}
-
-function writeTotalScores(game) {
-
-  if (game && game.collisionDetector.redScore > game.collisionDetector.blueScore) {
-    alert("Red Won!")
-    localStorage.setItem('redTotal', parseInt(localStorage.getItem('redTotal')) + 1)
-  } else if (game && game.collisionDetector.redScore < game.collisionDetector.blueScore) {
-    alert("Blue Won!")
-    localStorage.setItem('blueTotal', parseInt(localStorage.getItem('blueTotal')) + 1)
-  } else {
-    alert("Tie Game!")
-  }
-}
-
-function prepareGame(mapLevel) {
-  var keys = new Keyboard().listenForEvents()
-  var blueprint = new MapBlueprint()[mapLevel]
-  var map = new Map(blueprint)
-
-  canvas.setAttribute("width", `${map.cols * map.tsize}px`)
-  canvas.setAttribute("height", `${map.rows * map.tsize}px`)
-
-  game = new Game(context, canvas, keys, map, blueprint)
-  game.init()
-}

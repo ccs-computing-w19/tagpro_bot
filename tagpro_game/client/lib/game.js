@@ -2,56 +2,75 @@ import Player from './player'
 import Flag from './flag'
 import Spike from './spike'
 import CollisionDectector from './collision-detector'
+import Map from './map'
 
 export default class Game {
-  constructor(context, canvas, keyboard, map, blueprint) {
-    this.canvas = canvas
-    this.context = context
-    this.keyboard = keyboard
-    this.map = map
-    this.players = []
-    this.flags = []
-    this.blueprint = blueprint
-    this.spikes = []
-    this.collisionDetector = {}     
-    this.running = false
-  }
+	//TODO allow this in babel config
+	//gameId 
+	//playerId
+	constructor(context, canvas, keyboard) {
+		this.gameId = undefined 
+		this.playerId = undefined
 
-  init() {
-    let self = this
-    self.running = true
+		this.canvas = canvas
+		this.context = context
+		this.keyboard = keyboard
+		this.map = {}
+		this.players = []
+		this.flags = []
+		this.blueprint = {}
+		this.spikes = []
+		this.running = false
 
-    self.players.push(new Player(self.map, self.blueprint.redPlayerOptions))
-    self.players.push(new Player(self.map, self.blueprint.bluePlayerOptions))
+		this.redScore = 0
+		this.blueScore = 0
+		this.gameCounter = 0
+		this.gameDuration = 3600
+	}
 
-    self.flags.push(new Flag(self.blueprint.blueFlagOptions))
-    self.flags.push(new Flag(self.blueprint.redFlagOptions))
+	init(blueprint, sPlayers) {
+		this.running = true
 
-    if (self.blueprint.spikes) {
-      self.blueprint.spikes.forEach(spikeOptions => {
-        self.spikes.push(new Spike(spikeOptions))
-      })
-    }
-    self.collisionDetector = new CollisionDectector(self.players, self.flags, self.spikes)
-  }
+		this.blueprint = blueprint
+		this.map = new Map(blueprint)
 
-  update(game_counter) {
-    this.updateScoreboard()
-    this.players.forEach(player => player.move(this.keyboard.keys))
-    this.spikes.forEach(spike => spike.move(game_counter))
-    this.collisionDetector.checkAllCollisions()
-  }
+		this.updatePlayers(sPlayers)
 
-  updateScoreboard() {
-    document.querySelector("#red-score").innerHTML = this.collisionDetector.redScore
-    document.querySelector("#blue-score").innerHTML = this.collisionDetector.blueScore
-  }
+		this.flags.push(new Flag(this.blueprint.blueFlagOptions))
+		this.flags.push(new Flag(this.blueprint.redFlagOptions))
 
-  draw() {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-    this.map.render(this.context)
-    this.flags.forEach(flag => flag.draw(this.context))
-    this.spikes.forEach(spike => spike.draw(this.context))
-    this.players.forEach(player => player.draw(this.context))
-  }
+		if (this.blueprint.spikes) {
+			this.blueprint.spikes.forEach(spikeOptions => {
+				this.spikes.push(new Spike(spikeOptions))
+			})
+		}
+
+		this.canvas.setAttribute("width", `${this.map.cols * this.map.tsize}px`)
+		this.canvas.setAttribute("height", `${this.map.rows * this.map.tsize}px`)
+	}
+
+	//sPlayers are server players
+	updatePlayers(sPlayers) {
+		sPlayers.forEach( (sPlayer, id, sPlayers) => {
+			if(this.players[id] == undefined){
+				this.players[id] = new Player(id, sPlayer.map, sPlayer.x, sPlayer.y, sPlayer.radius, sPlayer.color, sPlayer.controls, sPlayer.acceleration);
+			}
+			for(const key in sPlayer) {
+				this.players[id][key] = sPlayer[key];
+			}
+		});
+	}
+
+	updateScoreboard() {
+		document.querySelector("#red-score").innerHTML = this.redScore
+		document.querySelector("#blue-score").innerHTML = this.blueScore
+	}
+
+	draw() {
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+		this.map.render(this.context)
+		this.flags.forEach(flag => flag.draw(this.context))
+		this.spikes.forEach(spike => spike.draw(this.context))
+		this.players.forEach(player => player.draw(this.context))
+	}
 }
