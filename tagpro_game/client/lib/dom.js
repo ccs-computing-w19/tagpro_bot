@@ -47,7 +47,6 @@ export default class Dom {
 		document.querySelector("div.start-menu").style.display = "block"
 		document.querySelectorAll("button.start-button").forEach(
 			button => button.style.display = "block")
-		document.getElementById("progress").style.display = "flex"
 	}
 
 	hideMenu() {
@@ -56,7 +55,7 @@ export default class Dom {
 
 	hideGame() {
 		Array.from(this.canvases).forEach(canvas => this.hide(canvas))
-		this.makeVisible(this.progress)
+		this.makeHidden(this.progress)
 		this.makeHidden(this.scoreBoard)
 	}
 

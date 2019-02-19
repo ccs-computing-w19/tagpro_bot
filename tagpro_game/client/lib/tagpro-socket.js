@@ -16,7 +16,7 @@ export default class TagproSocket{
       dom.updateMessage(`Left game: ${data.gameId}.`);
     });
     this.IO.on("playerJoined", (data) => {
-      dom.updateMessage(`${data.playerName} joined game: ${data.gameId}.`);
+      dom.updateMessage(`Waiting for players... ${data.playerCount}/${data.maxPlayers} players in game ${data.gameId}.`);
       game.gameId = data.gameId;
     });
     this.IO.on('playerId', (data) => {
@@ -28,9 +28,24 @@ export default class TagproSocket{
       dom.showGame();
       game.init(data.blueprint, data.players);
     });
+		this.IO.on('gameEnded', (data) => {
+			game.running = false;
+			alert(data.winnerMessage);
+		});
+    this.IO.on('time', (data) => {
+			game.gameCounter = data.gameCounter;      
+			if(data.gameDuration != undefined){
+				game.gameDuration = data.gameDuration;
+			}
+    });
     this.IO.on('playerUpdate', (data) => {
       game.updatePlayers(data.players);
     });
+		this.IO.on('scoreUpdate', (data) => {
+			game.redScore = data.redScore;
+			game.blueScore = data.blueScore;
+			game.updateScoreboard();
+		});
   }
   emitCreateRequest(){
     this.IO.emit('createRequest');

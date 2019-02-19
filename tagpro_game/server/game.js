@@ -7,7 +7,7 @@ import {setGameLoop, clearGameLoop} from './gameloop'
 
 export default class Game {
 
-	constructor(myId, io, map, blueprint) { //TODO actually pass in this args
+	constructor(myId, io, map, blueprint) {
 		this.id = myId
 		this.io = io
 		this.players = []
@@ -21,7 +21,8 @@ export default class Game {
 		this.spikes = []
 		this.collisionDetector = {}     
 
-		this.game_counter = 0
+		this.gameCounter = 0
+		this.gameDuration = 3600
 		this.running = false
 	}
 	isFull() {
@@ -80,16 +81,28 @@ export default class Game {
 		this.io.to(this.id).emit(eventName, data);
 	}
 
-
-
-
 	init() {
 		this.running = true
-		
-		setGameLoop(() => {
+
+		this.emitToRoom('time', {gameCounter: this.gameCounter, gameDuration: this.gameDuration})
+
+		let mainLoop = setGameLoop(() => {
+			this.gameCounter++
 			this.update()
 			this.emitToRoom('playerUpdate', {players : this.players})
-		})
+			this.emitToRoom('time', {gameCounter: this.gameCounter})
+			//TODO only emit after someone scores
+			this.emitToRoom('scoreUpdate', {
+				blueScore: this.collisionDetector.blueScore,
+				redScore: this.collisionDetector.redScore
+			})
+			if(this.gameCounter >= this.gameDuration){
+				this.running = false;
+				this.emitToRoom('gameEnded', {winnerMessage: this.getWinnerMessage()});
+				clearGameLoop(mainLoop);
+			}
+
+		}, undefined, 1000/60)
 
 		this.flags.push(new Flag(this.blueprint.blueFlagOptions))
 		this.flags.push(new Flag(this.blueprint.redFlagOptions))
@@ -104,18 +117,20 @@ export default class Game {
 	}
 
 	update() {
-		this.updateScoreboard()
 		this.players.forEach(player => player.move(player.keyboard.keys))
-		this.spikes.forEach(spike => spike.move(this.game_counter))
+		this.spikes.forEach(spike => spike.move(this.gameCounter))
 		this.collisionDetector.checkAllCollisions()
-		this.game_counter++
 	}
 
-	updateScoreboard() {
-		/* TODO emit these scores:
-		this.collisionDetector.redScore
-		this.collisionDetector.blueScore
-		*/
+	getWinnerMessage() {
+
+		if (this.collisionDetector.redScore > this.collisionDetector.blueScore) {
+			return "Red Won!"
+		} else if (game.collisionDetector.redScore < game.collisionDetector.blueScore) {
+			return "Blue Won!"
+		} else {
+			return "Tie Game!"
+		}
 	}
 
 }

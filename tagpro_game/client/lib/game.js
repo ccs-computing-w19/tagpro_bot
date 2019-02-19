@@ -5,69 +5,72 @@ import CollisionDectector from './collision-detector'
 import Map from './map'
 
 export default class Game {
-    //TODO allow this in babel config
-    //gameId 
-    //playerId
-  constructor(context, canvas, keyboard) {
-    this.gameId = undefined
-    this.playerId = undefined
-    this.canvas = canvas
-    this.context = context
-    this.keyboard = keyboard
-    this.map = {}
-    this.players = []
-    this.flags = []
-    this.blueprint = {}
-    this.spikes = []
-    this.collisionDetector = {}     
-    this.running = false
+	//TODO allow this in babel config
+	//gameId 
+	//playerId
+	constructor(context, canvas, keyboard) {
+		this.gameId = undefined 
+		this.playerId = undefined
 
-    this.gameCounter = 0
-  }
+		this.canvas = canvas
+		this.context = context
+		this.keyboard = keyboard
+		this.map = {}
+		this.players = []
+		this.flags = []
+		this.blueprint = {}
+		this.spikes = []
+		this.running = false
 
-  init(blueprint, sPlayers) {
-    this.running = true
+		this.redScore = 0
+		this.blueScore = 0
+		this.gameCounter = 0
+		this.gameDuration = 3600
+	}
 
-    this.blueprint = blueprint
-    this.map = new Map(blueprint)
-	  
-    this.updatePlayers(sPlayers)
+	init(blueprint, sPlayers) {
+		this.running = true
 
-    this.flags.push(new Flag(this.blueprint.blueFlagOptions))
-    this.flags.push(new Flag(this.blueprint.redFlagOptions))
+		this.blueprint = blueprint
+		this.map = new Map(blueprint)
 
-    if (this.blueprint.spikes) {
-      this.blueprint.spikes.forEach(spikeOptions => {
-        this.spikes.push(new Spike(spikeOptions))
-      })
-    }
+		this.updatePlayers(sPlayers)
 
-    this.canvas.setAttribute("width", `${this.map.cols * this.map.tsize}px`)
-    this.canvas.setAttribute("height", `${this.map.rows * this.map.tsize}px`)
-  }
+		this.flags.push(new Flag(this.blueprint.blueFlagOptions))
+		this.flags.push(new Flag(this.blueprint.redFlagOptions))
 
-  //sPlayers are server players
-  updatePlayers(sPlayers) {
-    sPlayers.forEach( (sPlayer, id, sPlayers) => {
-      if(this.players[id] == undefined){
-	this.players[id] = new Player(id, sPlayer.map, sPlayer.x, sPlayer.y, sPlayer.radius, sPlayer.color, sPlayer.controls, sPlayer.acceleration);
-      }
-      for(const key in sPlayer) {
-	this.players[id][key] = sPlayer[key];
-      }
-    });
-  }
+		if (this.blueprint.spikes) {
+			this.blueprint.spikes.forEach(spikeOptions => {
+				this.spikes.push(new Spike(spikeOptions))
+			})
+		}
 
-  updateScoreboard() {
-    document.querySelector("#red-score").innerHTML = this.collisionDetector.redScore
-    document.querySelector("#blue-score").innerHTML = this.collisionDetector.blueScore
-  }
+		this.canvas.setAttribute("width", `${this.map.cols * this.map.tsize}px`)
+		this.canvas.setAttribute("height", `${this.map.rows * this.map.tsize}px`)
+	}
 
-  draw() {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-    this.map.render(this.context)
-    this.flags.forEach(flag => flag.draw(this.context))
-    this.spikes.forEach(spike => spike.draw(this.context))
-    this.players.forEach(player => player.draw(this.context))
-  }
+	//sPlayers are server players
+	updatePlayers(sPlayers) {
+		sPlayers.forEach( (sPlayer, id, sPlayers) => {
+			if(this.players[id] == undefined){
+				this.players[id] = new Player(id, sPlayer.map, sPlayer.x, sPlayer.y, sPlayer.radius, sPlayer.color, sPlayer.controls, sPlayer.acceleration);
+			}
+			for(const key in sPlayer) {
+				this.players[id][key] = sPlayer[key];
+			}
+		});
+	}
+
+	updateScoreboard() {
+		document.querySelector("#red-score").innerHTML = this.redScore
+		document.querySelector("#blue-score").innerHTML = this.blueScore
+	}
+
+	draw() {
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+		this.map.render(this.context)
+		this.flags.forEach(flag => flag.draw(this.context))
+		this.spikes.forEach(spike => spike.draw(this.context))
+		this.players.forEach(player => player.draw(this.context))
+	}
 }
