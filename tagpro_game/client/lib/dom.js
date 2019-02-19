@@ -1,76 +1,82 @@
 export default class Dom {
-  get buttons() {
-    return document.querySelectorAll("button.start-button")
-  }
+	get buttons() {
+		return document.querySelectorAll("button.start-button")
+	}
 
-  get canvases() {
-    return document.querySelectorAll("canvas.game-canvas")
-  }
+	get canvases() {
+		return document.querySelectorAll("canvas.game-canvas")
+	}
 
-  showMenu() {
-    document.querySelector('div.start-menu').style.display = 'block'
-    document.querySelectorAll('button.start-button').forEach(
-      button => button.style.display = 'block')
-    document.getElementById('progress').style.display = 'flex'
-  }
+	get progress() {
+		return document.getElementById("progress")
+	}
 
-  hideMenu() {
-    document.querySelector('div.start-menu').style.display = 'none'
-  }
+	get joiner() {
+		return document.querySelector("div.join-game-wrapper")
+	}
 
-  get progress() {
-    return document.getElementById('progress')
-  }
+	get scoreBoard() {
+		return document.getElementById("score-board-container")
+	}
 
-  level(event) {
-    return event.currentTarget.getAttribute("id")
-  }
+	level(event) {
+		return event.currentTarget.getAttribute("id")
+	}
 
-  listenOn(element, type, fn) {
-    element.addEventListener(type, fn)
-  }
+	listenOn(element, type, fn) {
+		element.addEventListener(type, fn)
+	}
 
-  hide(element) {
-    element.style.display = 'none'
-  }
+	makeVisible(element) {
+		element.style.visibility = "visible"
+	}
 
-  hideProgress() {
-    this.progress.style.visibility = 'hidden'
-  }
+	makeHidden(element) {
+		element.style.visibility = "hidden"
+	}
 
-  showProgress() {
-    this.progress.style.visibility = 'visible'
-  }
+	display(element) {
+		element.style.display = "block"
+	}
 
-  makeVisible(element) {
-    element.style.visibility = "visible"
-  }
+	hide(element) {
+		element.style.display = "none"
+	}
 
-  display(element) {
-    element.style.display = 'block'
-  }
+	showMenu() {
+		document.querySelector("div.start-menu").style.display = "block"
+		document.querySelectorAll("button.start-button").forEach(
+			button => button.style.display = "block")
+		document.getElementById("progress").style.display = "flex"
+	}
 
-  hideGame() {
-    Array.from(this.canvases).forEach(canvas => this.hide(canvas))
-    this.showProgress()
-  }
+	hideMenu() {
+		document.querySelector("div.start-menu").style.display = "none"
+	}
 
-  showGame() {
-    Array.from(this.canvases).forEach(canvas => this.display(canvas))
-    this.hideProgress();
-  }
+	hideGame() {
+		Array.from(this.canvases).forEach(canvas => this.hide(canvas))
+		this.makeVisible(this.progress)
+		this.makeHidden(this.scoreBoard)
+	}
 
-  showJoiner() {
-    this.display(document.querySelector('div.join-game-wrapper'))
-  }
+	showGame() {
+		Array.from(this.canvases).forEach(canvas => this.display(canvas))
+		this.makeHidden(this.progress)
+		this.makeVisible(this.scoreBoard)
+	}
 
-  hideJoiner() {
-    this.hide(document.querySelector('div.join-game-wrapper'))
-  }
+	showJoiner() {
+		this.display(this.joiner)
+	}
 
-  updateMessage(text) {
-    document.getElementById('message').innerText = text;
-  }
+	hideJoiner() {
+		this.hide(this.joiner)
+	}
+
+	updateMessage(text) {
+		document.getElementById("message").innerText = text;
+	}
 
 }
 
