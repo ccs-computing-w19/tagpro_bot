@@ -1,6 +1,6 @@
 export default class TagproSocket{
   constructor() {
-    this.IO = io.connect('http://localhost:4001');
+    this.IO = io.connect();
   }
   initListeners(dom, game){
     this.IO.on('showMenu', () => {dom.showMenu()});
@@ -25,6 +25,7 @@ export default class TagproSocket{
     this.IO.on('gameStarted', (data) => {
       console.log('Starting game...');
       dom.hideJoiner();
+			dom.hideProgress();
       dom.showGame();
       game.init(data.blueprint, data.players);
     });
