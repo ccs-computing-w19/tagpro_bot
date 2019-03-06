@@ -25,7 +25,7 @@ export default class Game {
 		this.redScore = 0
 		this.blueScore = 0
 		this.gameCounter = 0
-		this.gameDuration = 3600
+		this.gameDuration = undefined
 	}
 
 	init(blueprint, sPlayers) {
