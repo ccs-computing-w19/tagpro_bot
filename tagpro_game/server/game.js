@@ -5,9 +5,13 @@ import CollisionDectector from './collision-detector'
 import Keyboard from './keyboard'
 import {setGameLoop, clearGameLoop} from './gameloop'
 
+//import {jsonCopy} from './utils'
+
 export default class Game {
 
 	constructor(myId, io, map, blueprint) {
+		this.playerSpawnY = 0 //TODO temp variable
+
 		this.id = myId
 		this.io = io
 		this.players = []
@@ -22,7 +26,7 @@ export default class Game {
 		this.collisionDetector = {}     
 
 		this.gameCounter = 0
-		this.gameDuration = 3600
+		this.gameDuration = 5000
 		this.running = false
 	}
 	isFull() {
@@ -35,11 +39,13 @@ export default class Game {
 		let thisPlayerId = this.idCount++;
 		let createdPlayer;
 		if(thisPlayerId % 2 === 0){
+			this.playerSpawnY += 40
 			createdPlayer = new Player(
 				thisPlayerId,
 				socket,
 				this.map,
 				new Keyboard(),
+				this.playerSpawnY,
 				this.blueprint.bluePlayerOptions
 			);
 		}else{
@@ -48,6 +54,7 @@ export default class Game {
 				socket,
 				this.map,
 				new Keyboard(),
+				this.playerSpawnY,
 				this.blueprint.redPlayerOptions
 			);
 		}
@@ -81,28 +88,15 @@ export default class Game {
 		this.io.to(this.id).emit(eventName, data);
 	}
 
+	jsonCopy(src) {
+			return JSON.parse(JSON.stringify(src));
+	}
+
 	init() {
 		this.running = true
 
 		this.emitToRoom('time', {gameCounter: this.gameCounter, gameDuration: this.gameDuration})
 
-		let mainLoop = setGameLoop(() => {
-			this.gameCounter++
-			this.update()
-			this.emitToRoom('playerUpdate', {players : this.players})
-			this.emitToRoom('time', {gameCounter: this.gameCounter})
-			//TODO only emit after someone scores
-			this.emitToRoom('scoreUpdate', {
-				blueScore: this.collisionDetector.blueScore,
-				redScore: this.collisionDetector.redScore
-			})
-			if(this.gameCounter >= this.gameDuration){
-				this.running = false;
-				this.emitToRoom('gameEnded', {winnerMessage: this.getWinnerMessage()});
-				clearGameLoop(mainLoop);
-			}
-
-		}, undefined, 1000/60)
 
 		this.flags.push(new Flag(this.blueprint.blueFlagOptions))
 		this.flags.push(new Flag(this.blueprint.redFlagOptions))
@@ -113,7 +107,32 @@ export default class Game {
 			})
 		}
 
+		//this.players.forEach(player => player.spawn())
+
 		this.collisionDetector = new CollisionDectector(this.players, this.flags, this.spikes)
+
+		let mainLoop = setGameLoop(() => {
+			this.gameCounter++
+			this.update()
+			this.emitToRoom('playerUpdate', {players : this.players.map((player) => {
+					let p = this.jsonCopy(player)
+					p.map = undefined
+					return p
+				})
+			})
+			this.emitToRoom('time', {gameCounter: this.gameCounter})
+			//TODO only emit after someone scores
+			this.emitToRoom('scoreUpdate', {
+				blueScore: this.collisionDetector.blueScore,
+				redScore: this.collisionDetector.redScore
+			})
+			if(this.gameCounter >= this.gameDuration) {
+				this.running = false;
+				this.emitToRoom('gameEnded', {winnerMessage: this.getWinnerMessage()});
+				clearGameLoop(mainLoop);
+			}
+
+		}, undefined, 1000/60)
 	}
 
 	update() {
@@ -126,7 +145,7 @@ export default class Game {
 
 		if (this.collisionDetector.redScore > this.collisionDetector.blueScore) {
 			return "Red Won!"
-		} else if (game.collisionDetector.redScore < game.collisionDetector.blueScore) {
+		} else if (this.collisionDetector.redScore < this.collisionDetector.blueScore) {
 			return "Blue Won!"
 		} else {
 			return "Tie Game!"
