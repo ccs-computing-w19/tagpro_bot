@@ -1,81 +1,86 @@
 export default class Dom {
-	get buttons() {
-		return document.querySelectorAll("button.start-button")
-	}
+  static get buttons() {
+    return document.querySelectorAll('button.start-button');
+  }
 
-	get canvases() {
-		return document.querySelectorAll("canvas.game-canvas")
-	}
+  static get canvases() {
+    return document.querySelectorAll('canvas.game-canvas');
+  }
 
-	get progress() {
-		return document.getElementById("progress")
-	}
+  static get progress() {
+    return document.getElementById('progress');
+  }
 
-	get joiner() {
-		return document.querySelector("div.join-game-wrapper")
-	}
+  static get joiner() {
+    return document.querySelector('div.join-game-wrapper');
+  }
 
-	get scoreBoard() {
-		return document.getElementById("score-board-container")
-	}
+  static get scoreBoard() {
+    return document.getElementById('score-board-container');
+  }
 
-	level(event) {
-		return event.currentTarget.getAttribute("id")
-	}
+  static level(event) {
+    return event.currentTarget.getAttribute('id');
+  }
 
-	listenOn(element, type, fn) {
-		element.addEventListener(type, fn)
-	}
+  static listenOn(element, type, fn) {
+    element.addEventListener(type, fn);
+  }
 
-	makeVisible(element) {
-		element.style.visibility = "visible"
-	}
+  static makeVisible(element) {
+    element.style.visibility = 'visible';
+  }
 
-	makeHidden(element) {
-		element.style.visibility = "hidden"
-	}
+  static makeHidden(element) {
+    element.style.visibility = 'hidden';
+  }
 
-	display(element) {
-		element.style.display = "block"
-	}
+  static display(element) {
+    element.style.display = 'block';
+  }
 
-	hide(element) {
-		element.style.display = "none"
-	}
+  static hide(element) {
+    element.style.display = 'none';
+  }
 
-	showMenu() {
-		document.querySelector("div.start-menu").style.display = "block"
-		document.querySelectorAll("button.start-button").forEach(
-			button => button.style.display = "block")
-	}
+  static showMenu() {
+    document.querySelector('div.start-menu').style.display = 'block';
+    document.querySelectorAll('button.start-button').forEach(
+      button => button.style.display = 'block',
+    );
+  }
 
-	hideMenu() {
-		document.querySelector("div.start-menu").style.display = "none"
-	}
+  static hideMenu() {
+    document.querySelector('div.start-menu').style.display = 'none';
+  }
 
-	hideGame() {
-		Array.from(this.canvases).forEach(canvas => this.hide(canvas))
-		this.makeHidden(this.progress)
-		this.makeHidden(this.scoreBoard)
-	}
+  static hideGame() {
+    Array.from(Dom.canvases).forEach(canvas => Dom.hide(canvas));
+    Dom.makeHidden(Dom.scoreBoard);
+  }
 
-	showGame() {
-		Array.from(this.canvases).forEach(canvas => this.display(canvas))
-		this.makeHidden(this.progress)
-		this.makeVisible(this.scoreBoard)
-	}
+  static showGame() {
+    Array.from(Dom.canvases).forEach(canvas => Dom.display(canvas));
+    Dom.makeVisible(Dom.scoreBoard);
+  }
 
-	showJoiner() {
-		this.display(this.joiner)
-	}
+  static showProgress() {
+    Dom.makeVisible(Dom.progress);
+  }
 
-	hideJoiner() {
-		this.hide(this.joiner)
-	}
+  static hideProgress() {
+    Dom.makeHidden(Dom.progress);
+  }
 
-	updateMessage(text) {
-		document.getElementById("message").innerText = text;
-	}
+  static showJoiner() {
+    Dom.display(Dom.joiner);
+  }
 
+  static hideJoiner() {
+    Dom.hide(Dom.joiner);
+  }
+
+  static updateMessage(text) {
+    document.getElementById('message').innerText = text;
+  }
 }
-
